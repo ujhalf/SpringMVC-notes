@@ -21,8 +21,19 @@
         <property name="suffix" value=".jsp"/>
     </bean>
 
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <!--自定义一个类型转换器:用于转换yyyy-MM-dd这种形式的日期 并添加至内置的conversionService中-->
+                <bean class="com.half.utils.SimpleDateConverter"/>
+            </set>
+        </property>
+    </bean>
     <!--开启SpringMVC注解支持-->
     <mvc:annotation-driven/>
+    <!--将添加了自定义的类型转换器后的类型转换服务注册到容器中-->
+    <mvc:annotation-driven conversion-service="conversionService"/>
 
-    <bean id="helloController" class="com.half.controller.HelloController"/>
+
 </beans>

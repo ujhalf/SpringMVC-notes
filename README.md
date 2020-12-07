@@ -128,6 +128,27 @@
 在`web.xml`中配置前端控制器
 
 ```xml
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <!--中文乱码问题 post请求时会出现 -->
+    <filter>
+        <filter-name>characterEncodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <!-- 指定字符集-->
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>characterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!--前端控制器-->
     <servlet>
         <servlet-name>dispatcherServlet</servlet-name>
@@ -144,6 +165,10 @@
         <servlet-name>dispatcherServlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+
+</web-app>
+
 ```
 
 ### 3.请求处理流程
@@ -172,6 +197,6 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	- 注解在类上，方法上
 	- 作用:建立请求URL与处理请求方法之间的对应关系
 	- params属性，用于限制请求参数。params = {"accountName"}，表示请求参数必须有accountName；params = {"moeny!100"}，表示请求参数中money不能是100。
-	- headers属性
+	- headers属性,用于指定接受的请求头。
 
 2. #### `RequesstParam`
