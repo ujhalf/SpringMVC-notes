@@ -16,12 +16,12 @@ import java.util.Date;
 public class SimpleDateConverter implements Converter<String, Date> {
     @Override
     public Date convert(String source) {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             return df.parse(source);
         } catch (ParseException e) {
             e.printStackTrace();
-             df = new SimpleDateFormat("yyyy/MM/dd");
+             df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             try {
                 return df.parse(source);
             } catch (ParseException parseException) {

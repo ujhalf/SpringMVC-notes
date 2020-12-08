@@ -37,5 +37,4 @@
     <input type="submit" value="点击提交">
 </form>
 
-</body>
 </html>

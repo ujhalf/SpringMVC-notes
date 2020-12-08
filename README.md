@@ -35,7 +35,7 @@
 
 ### 1.2 Spring  MVC概述
 
-​		SpringMVC是一种基于Java实现的MVC设置模型的轻量级web框架。通过使用注解让简单的Java类成为请求的控制器，支持Restful编程风格。
+​		SpringMVC是一种基于Java实现的MVC设计模型的轻量级web框架。通过使用注解让简单的Java类成为请求的控制器，支持Restful编程风格。
 
 ![](D:\prj\mvc\SpringMVC-notes\images\image-20201207110937946.png)
 
@@ -200,3 +200,40 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	- headers属性,用于指定接受的请求头。
 
 2. #### `RequesstParam`
+
+	- 注解在方法上
+	- 用于绑定请求参数和controller中方法的形参
+	- 当请求参数与默认的形参一样时可以不加此注解
+	- required属性表示这个参数是否是必须的，默认是true
+
+3. `RequestBody`
+
+	- 注解在方法上
+	- 用于获取请求体中的参数
+
+4. **`PathVariable`**
+
+	- 注解在方法上
+	- Restful编程风格中常常使用。Restful：使用名词表示操作的资源，使用http method 动词表示请求方法
+	- /path/{id}表示获取请求中的参数
+
+5. `RequestHeader`
+
+	- 用于获取请求头信息
+	- @CookieValue("JSESSIONID") 
+
+6. **ModelAttribute**
+
+	- 注解在方法和参数上
+	- 注解在方法上:被注解的方法会在控制器中的方法执行前先执行
+	- 注解在参数上:获取指定的数据 为参数赋值
+
+7. **SessionAttributes**
+
+	- 只能注解在类上
+
+	
+
+
+
+​	
