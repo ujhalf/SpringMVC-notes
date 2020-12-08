@@ -72,7 +72,7 @@
 
 
 
-## 2.SpringMVC入门程序
+## 2.SpringMVC基本配置
 
 ### 1.在`pom.xml`中引入依赖坐标
 
@@ -222,18 +222,47 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	- 用于获取请求头信息
 	- @CookieValue("JSESSIONID") 
 
-6. **ModelAttribute**
+6. `**ModelAttribute**`
 
 	- 注解在方法和参数上
 	- 注解在方法上:被注解的方法会在控制器中的方法执行前先执行
 	- 注解在参数上:获取指定的数据 为参数赋值
 
-7. **SessionAttributes**
+7. `**SessionAttributes**`
 
 	- 只能注解在类上
-
+-  用于在请求中共享数据
+	- 通过`Model`对象的Model.addAttribute()添加属性; `ModelMap`对象的`ModelMap.getAttribute()`获取属性;通过`SessionStatus`的`setComplete()`清除所有的属性
+	
 	
 
+## 3.SpringMVC response
 
+​		依据controller中请求处理方法的返回值,分类如下:
+
+1. 返回字符串类型
+
+	- 返回字符串默认为视图的名称，会根据context中配置的视图解析器中的路径去寻找指定名称的视图。
+
+	- 可通过使用`Model`对象向request域中传递参数，并传递到视图中。
+
+	- ```java
+		    /*演示请求处理方法返回值为String类型，
+		    这种场景下会根据返回的字符串去依据springmvc.xml中
+		    的视图解析器配置去匹配相应的视图*/
+		    @GetMapping("/string")
+		    public String retStr(Model model) {
+		        System.out.println("方法返回值为String类型");
+		        //创建一个对象 使用Model存入视图中 并在页面上展示
+		        User user = new User();
+		        user.setAge(15);
+		        user.setUname("kobe");
+		        model.addAttribute("user", user);
+		        //视图的逻辑名称 会返回这个视图
+		        return "response";
+		    }
+		```
+
+	- 
 
 ​	
