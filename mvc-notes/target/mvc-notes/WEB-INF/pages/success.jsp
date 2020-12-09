@@ -13,5 +13,7 @@
 <body>
 <p>Hello SpringMVC !</p>
 ${msg}
+${user.uname}
+${user.age}
 </body>
 </html>

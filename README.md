@@ -1,4 +1,5 @@
-# SpringMVC-notes
+1. # SpringMVC-notes
+
 
 ## 1.SpringMVC基本概念
 
@@ -231,10 +232,15 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 7. `**SessionAttributes**`
 
 	- 只能注解在类上
--  用于在请求中共享数据
+	- 用于在请求中共享数据
 	- 通过`Model`对象的Model.addAttribute()添加属性; `ModelMap`对象的`ModelMap.getAttribute()`获取属性;通过`SessionStatus`的`setComplete()`清除所有的属性
 	
-	
+8. **ResponseBody**
+
+	- 注解在方法上
+	- 方法返回值应当作为参数绑定在响应体中
+
+
 
 ## 3.SpringMVC response
 
@@ -261,8 +267,202 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 		        //视图的逻辑名称 会返回这个视图
 		        return "response";
 		    }
+		
+```
+	
+2. void类型
+
+	- 当controller方法不含返回值时，默认会将请求路径来匹配查询对应的视图
+
+	- 为了阻止默认的这种行为，可以使用ServletAPI来自己编写转发和重定向处理后续逻辑
+
+	- 转发:1次请求，可以直接请求WEB/INF下的资源，但是自己调用API进行转发时并不会使用视图解析器的配置，因此路径/视图后缀需要写全，如:`request.getRequestDispatcher("/WEB-INF/pages/success.jsp").forward(request, response);`
+
+	- 重定向:两次请求，不能直接请求WEB-INF下的资源，路径写法:`response.sendRedirect(request.getContextPath()+"/index.jsp");`
+
+	- 使用response调用输出流直接写回响应内容
+
+	- ```java
+		/**
+		     * 当方法返回值为void类型时，默认会将path中的路径当作视图名称去解析
+		     */
+		    @GetMapping("/void")
+		    public void retVoid(Model model ) throws ServletException, IOException {
+		        System.out.println("方法返回值为Void类型");
+		        //创建一个对象 使用Model存入视图中 并在页面上展示
+		        User user = new User();
+		        user.setAge(15);
+		        user.setUname("kobe");
+		        model.addAttribute("user", user);
+		    }
+		
+		    /**
+		     * 当方法返回值为void类型时，默认会将path中的路径当作视图名称去解析
+		     * 这时如果不想跳转 可以调用ServletAPI指明处理逻辑 自己调用API进行转发时 并不使用配置的视图解析器 因此路径/文件后缀需要写全
+		     */
+		    @GetMapping("/voidForward")
+		    public void retVoidForward( HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		        System.out.println("方法返回值为Void类型，使用原生ServletAPI进行转发处理");
+		        //使用ServletAPI自行处理后续逻辑
+		        //使用转发 路径写法与重定向有区别  自己调用转发方法时，并不再使用配置的视图解析器对象，因此路径需要自己配置
+		        //转发可以直接请求WEB/INF下的内容
+		        request.getRequestDispatcher("/WEB-INF/pages/success.jsp").forward(request, response);
+		        //后续方法不再继续
+		        return;
+		    }
+		
+		    /**
+		     * 当方法返回值为void类型时，默认会将path中的路径当作视图名称去解析
+		     * 这时如果不想跳转 可以调用ServletAPI指明处理逻辑 自己调用API进行转发时 并不使用配置的视图解析器 因此路径/文件后缀需要写全
+		     */
+		    @GetMapping("/voidRedirect")
+		    public void retVoidRedirect( HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		        System.out.println("方法返回值为Void类型,使用重定向");
+		        //创建一个对象 使用Model存入视图中 并在页面上展示
+		        //使用ServletAPI自己进行后续逻辑的处理
+		        //使用重定向 路径写法与重定向有区别
+		        //重定向是两次请求不能直接请求WEB/INF下的内容
+		        response.sendRedirect(request.getContextPath()+"/index.jsp");
+		        //后续方法不再继续
+		        return;
+		    }
+		
+		    /**
+		     * 当方法返回值为void类型时，默认会将path中的路径当作视图名称去解析
+		     * 使用response调用输出流直接进行处理
+		     */
+		    @GetMapping("/voidWriter")
+		    public void retVoidWriter( HttpServletResponse response) throws ServletException, IOException {
+		        System.out.println("方法返回值为Void类型,使用response输出流直接响应");
+		        //设置编码 防止中文乱码
+		        response.setCharacterEncoding("UTF-8");
+		        //设置请求头
+		        response.setContentType("text/html;charset=UTF-8");
+		        //调用输出流 写出响应内容
+		        response.getWriter().print("Hi this is a message sent from response.getWriter().print()");
+		        return;
+		    }
 		```
 
-	- 
+3. ModelAndView
 
-​	
+	- 使用new 创建ModelAndView对象，并可以向该对象填入需要的属性，设置视图的名称。
+
+	- 返回String类型解析视图的过程实际也是返回的ModelAndView对象,设置视图名称时无需后缀和具体路径，只需要逻辑名称
+
+	- ```java
+		    /**
+		     * 返回值为ModelAndView类型
+		     */
+		    @GetMapping("modelAndView")
+		    public ModelAndView retModelAndView() {
+		        ModelAndView mv = new ModelAndView();
+		        //添加属性
+		        User user = new User();
+		        user.setAge(15);
+		        user.setUname("kobe");
+		        mv.addObject("user", user);
+		        //设置视图名称
+		        mv.setViewName("success");
+		        return mv;
+		    }
+		```
+
+4. 使用关键字进行转发和重定向
+
+	- 使用forward关键字进行转发:路径仍然需要写到具体路径
+
+	- ```java
+		    /**
+		     * 使用forward关键字进行转发
+		     */
+		    @GetMapping("/forward")
+		    public String retForward() {
+		        System.out.println("使用forward关键字进行转发……");
+		        return "forward:/WEB-INF/pages/success.jsp";
+		    }
+		
+		```
+
+	- 使用redirect关键字进行重定向:路径中无需写项目名
+
+	- ```java
+		    /**
+		     * 使用redirect关键字进行转发
+		     */
+		    @GetMapping("/redirect")
+		    public String retRedirect() {
+		        System.out.println("使用redirect关键字进行重定向……");
+		        //此处不加项目名称
+		        return "redirect:/index.jsp";
+		    }
+		```
+
+		
+
+5. 使用ResponseBody响应json数据
+
+6. 配置前端控制器不拦截静态资源
+
+	- 在springmvc.xml中配置
+
+	- ```xml
+		  <!--配置前端控制器 不拦截静态资源-->
+		    <mvc:resources mapping="/js/**" location="/js/"/>
+		```
+
+7. 类型转换
+
+	- 引入jackson坐标
+
+	- ```xml
+		
+		        <!--引入jackson 用于类型转换-->
+		        <dependency>
+		            <groupId>com.fasterxml.jackson.core</groupId>
+		            <artifactId>jackson-annotations</artifactId>
+		            <version>2.11.1</version>
+		        </dependency>
+		        <dependency>
+		            <groupId>com.fasterxml.jackson.core</groupId>
+		            <artifactId>jackson-databind</artifactId>
+		            <version>2.11.1</version>
+		        </dependency>
+		        <dependency>
+		            <groupId>com.fasterxml.jackson.core</groupId>
+		            <artifactId>jackson-core</artifactId>
+		            <version>2.11.1</version>
+		        </dependency>
+		```
+
+		
+
+8. ajax异步请求
+
+	- ```jsp
+		
+		    <script>
+		        $(function () {
+		            $("#btn2").click(function () {
+		               $.ajax({
+		                   url:"response/ajax",
+		                   contentType:"application/json;charset=UTF-8",
+		                   data:'{"uname":"kobe","age":"40"}',
+		                   dataType:"json",
+		                   type:"post",
+		                   success:function (data) {
+		                       alert(data.uname)
+		                       alert(data.age)
+		                   }
+		
+		               });
+		            });
+		        });
+		    </script>
+		```
+
+		
+
+	## 4.Spring MVC文件上传的方式
+
+	

@@ -35,5 +35,6 @@
     <!--将添加了自定义的类型转换器后的类型转换服务注册到容器中-->
     <mvc:annotation-driven conversion-service="conversionService"/>
 
-
+    <!--配置前端控制器 不拦截静态资源-->
+    <mvc:resources mapping="/js/**" location="/js/"/>
 </beans>
