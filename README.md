@@ -272,6 +272,8 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	
 2. void类型
 
+	
+
 	- 当controller方法不含返回值时，默认会将请求路径来匹配查询对应的视图
 
 	- 为了阻止默认的这种行为，可以使用ServletAPI来自己编写转发和重定向处理后续逻辑
