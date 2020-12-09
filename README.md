@@ -223,13 +223,13 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	- 用于获取请求头信息
 	- @CookieValue("JSESSIONID") 
 
-6. `**ModelAttribute**`
+6. `ModelAttribute`
 
 	- 注解在方法和参数上
 	- 注解在方法上:被注解的方法会在控制器中的方法执行前先执行
 	- 注解在参数上:获取指定的数据 为参数赋值
 
-7. `**SessionAttributes**`
+7. `SessionAttributes`
 
 	- 只能注解在类上
 	- 用于在请求中共享数据
