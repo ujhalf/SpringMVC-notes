@@ -37,4 +37,10 @@
 
     <!--配置前端控制器 不拦截静态资源-->
     <mvc:resources mapping="/js/**" location="/js/"/>
+
+    <!--文件解析器 由前端控制器调用 解析request为文件返回给后端    -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 支持的文件大小上限-->
+        <property name="maxUploadSize" value="10485760"/>
+    </bean>
 </beans>
