@@ -15,5 +15,6 @@
 ${msg}
 ${user.uname}
 ${user.age}
+<%System.out.println("success.jsp执行了");%>
 </body>
 </html>

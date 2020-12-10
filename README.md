@@ -246,7 +246,7 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 
 ​		依据controller中请求处理方法的返回值,分类如下:
 
-返回字符串类型
+### 1.String类型
 
 - 返回字符串默认为视图的名称，会根据context中配置的视图解析器中的路径去寻找指定名称的视图。
 
@@ -268,9 +268,9 @@ SpringMVC三大组件:HandlerMapping、HandlerAdapter、ViewResolver
 	        return "response";
 	    }
 	
-```
+	```
 
-void类型
+### 2.void类型
 
 - 当controller方法不含返回值时，默认会将请求路径来匹配查询对应的视图
 
@@ -344,7 +344,7 @@ void类型
       }
   ```
 
-ModelAndView
+### 3.ModelAndView类型
 
 - 使用new 创建ModelAndView对象，并可以向该对象填入需要的属性，设置视图的名称。
 
@@ -484,13 +484,13 @@ ajax异步请求
 
 
 
-1.SpringMVC上传文件，form表单配置：
+### 1.SpringMVC上传文件，form表单配置
 
 - `enctype`需要设置为`multipart/form-data`(默认值是:`application/x-www-form-urlencoded`,表示键值对的形式传递)
 - `method`使用`post`
 - `使用<input type="file"/>`来提供文件选择按钮
 
-2.`pom.xml`导入上传文件所需坐标:
+### 2.`pom.xml`导入上传文件所需坐标:
 
 ```xml
         <!--上传文件所需依赖-->
@@ -506,7 +506,7 @@ ajax异步请求
         </dependency>
 ```
 
-3.最原始的上传方式
+### 3.最原始的上传方式
 
 ```java
     /*使用原生ServletAPI完成文件上传*/
@@ -541,7 +541,7 @@ ajax异步请求
     }
 ```
 
-4.使用SpringMVC上传文件
+### 4.SpringMVC上传文件
 
 - 原理:由前端控制器调用文件解析器，进行文件解析，返回文件对象。
 
@@ -580,4 +580,64 @@ ajax异步请求
 	    }
 	```
 
-5.跨服务器文件上传
+### 5.跨服务器文件上传
+
+- 引入坐标:
+
+- ```xml
+	       <!--跨服务器文件上传所需依赖-->
+	        <dependency>
+	            <groupId>com.sun.jersey</groupId>
+	            <artifactId>jersey-core</artifactId>
+	            <version>1.18.1</version>
+	        </dependency>
+	
+	        <dependency>
+	            <groupId>com.sun.jersey</groupId>
+	            <artifactId>jersey-client</artifactId>
+	            <version>1.18.1</version>
+	        </dependency>
+	```
+
+- 使用jersey的Client与服务器建立连接并传递文件
+
+- ```java
+	    /**
+	     * 跨服务器文件上传
+	     * 导入jersey
+	     * 声明文件服务器存储路径
+	     */
+	    @PostMapping("/upload3")                     //此处形参需要与form表单中属性名一致
+	    public String upload3(HttpServletRequest request, MultipartFile upload3) throws Exception {
+	        //设置上传文件的目录
+	        String path ="http://localhost:8090/file_server_war/uploads/";
+	        //获取文件名
+	        String name = upload3.getOriginalFilename();
+	        //为文件生成唯一uuid
+	        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+	        //创建于文件服务器的连接
+	        Client client= Client.create();
+	        WebResource resource = client.resource(path + uuid + name);
+	        resource.put(upload3.getBytes());
+	        return "success";
+	    }
+	```
+
+- 服务器端需要存在相应的目录，否则会报错`409 Conflict`,表示请求与服务器端目标资源的当前状态相冲突。
+
+## 5.异常处理
+
+持久层、业务层、web层抛出异常，配置异常处理器，由前端控制器进行调用，进行异常处理。
+
+## 6.Interceptor的使用
+
+1. SpringMVC框架中的拦截器用于对处理器进行预处理和后处理的技术。
+2. 可以定义拦截器链，连接器链就是将拦截器按着一定的顺序结成一条链，在访问被拦截的方法时，拦截器链
+中的拦截器会按着定义的顺序执行。
+3. 拦截器和过滤器的功能比较类似，有区别
+1. 过滤器是Servlet规范的一部分，任何框架都可以使用过滤器技术。
+2. 拦截器是SpringMVC框架独有的。
+3. 过滤器配置了/*，可以拦截任何资源。
+4. 拦截器只会对控制器中的方法进行拦截。
+4. 拦截器也是AOP思想的一种实现方式
+5. 想要自定义拦截器，需要实现HandlerInterceptor接口。

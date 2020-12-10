@@ -1,6 +1,8 @@
 package com.half.controller;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
@@ -76,6 +78,26 @@ public class FileuploadController {
         //为文件生成唯一uuid
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         upload2.transferTo(new File(path, uuid + name));
+        return "success";
+    }
+
+    /**
+     * 跨服务器文件上传
+     * 导入jersey
+     * 声明文件服务器存储路径
+     */
+    @PostMapping("/upload3")                     //此处形参需要与form表单中属性名一致
+    public String upload3(HttpServletRequest request, MultipartFile upload3) throws Exception {
+        //设置上传文件的目录
+        String path ="http://localhost:8090/file_server_war/uploads/";
+        //获取文件名
+        String name = upload3.getOriginalFilename();
+        //为文件生成唯一uuid
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        //创建于文件服务器的连接
+        Client client= Client.create();
+        WebResource resource = client.resource(path + uuid + name);
+        resource.put(upload3.getBytes());
         return "success";
     }
 }

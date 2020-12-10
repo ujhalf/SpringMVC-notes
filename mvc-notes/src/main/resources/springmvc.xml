@@ -43,4 +43,13 @@
         <!-- 支持的文件大小上限-->
         <property name="maxUploadSize" value="10485760"/>
     </bean>
+
+    <!-- 配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--要拦截的具体方法-->
+            <mvc:mapping path="/interceptor/test1"/>
+            <bean class="com.half.inteceptor.SimpleInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 </beans>
